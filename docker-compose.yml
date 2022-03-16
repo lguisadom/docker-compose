@@ -1,0 +1,95 @@
+version: "3.8"
+services:
+  mongo:
+    image: "mongo:5.0.1"
+    container_name: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+
+  discovery-server:
+    container_name: ms-eureka
+    build: .
+    image: lguisadom/ms-eureka:1.0
+    restart: always
+    ports:
+      - "8087:8087"
+
+  config-server:
+    container_name: ms-configserver
+    build: .
+    image: lguisadom/ms-configserver:1.0
+    restart: always
+    ports:
+      - "8086:8086"
+
+  ms-customer-server:
+    container_name: ms-customer
+    build: .
+    image: lguisadom/ms-customer:1.0
+    restart: always
+    depends_on:
+      - mongo
+      - discovery-server
+      - config-server
+#    links:
+#      - config-server
+#      - mongo
+    environment:
+    #- "SPRING_CLOUD_CONFIG_PROFILE=dev"
+      - "SPRING_CONFIG_IMPORT=optional:configserver:http://ms-configserver:8086"
+      - "SPRING_DATA_MONGODB_HOST=mongo"
+      - "EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE=http://ms-eureka:8087/eureka"
+    ports:
+      - "8082:8082"
+
+  ms-credit-server:
+    container_name: ms-credit
+    build: .
+    image: lguisadom/ms-credit:1.0
+    restart: always
+    depends_on:
+      - mongo
+      - discovery-server
+      - config-server
+    environment:
+      - "SPRING_CONFIG_IMPORT=optional:configserver:http://ms-configserver:8086"
+      - "SPRING_DATA_MONGODB_HOST=mongo"
+      - "EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE=http://ms-eureka:8087/eureka"
+    ports:
+      - "8084:8084"
+
+  ms-account-server:
+    container_name: ms-account
+    build: .
+    image: lguisadom/ms-account:1.0
+    restart: always
+    depends_on:
+      - mongo
+      - discovery-server
+      - config-server
+    environment:
+      - "SPRING_CONFIG_IMPORT=optional:configserver:http://ms-configserver:8086"
+      - "SPRING_DATA_MONGODB_HOST=mongo"
+      - "EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE=http://ms-eureka:8087/eureka"
+    ports:
+      - "8083:8083"
+
+  ms-movements-server:
+    container_name: ms-movements
+    build: .
+    image: lguisadom/ms-movements:1.0
+    restart: always
+    depends_on:
+      - mongo
+      - discovery-server
+      - config-server
+    environment:
+      - "SPRING_CONFIG_IMPORT=optional:configserver:http://ms-configserver:8086"
+      - "SPRING_DATA_MONGODB_HOST=mongo"
+      - "EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE=http://ms-eureka:8087/eureka"
+    ports:
+      - "8085:8085"
+networks:
+  default:
+    name: custom-network
