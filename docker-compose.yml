@@ -4,6 +4,8 @@ services:
     image: "mongo:5.0.1"
     container_name: mongo
     restart: always
+    networks:
+      - bootcamp2022
     ports:
       - "27017:27017"
 
@@ -12,6 +14,8 @@ services:
     build: .
     image: lguisadom/ms-eureka:1.0
     restart: always
+    networks:
+      - bootcamp2022
     ports:
       - "8087:8087"
 
@@ -20,6 +24,8 @@ services:
     build: .
     image: lguisadom/ms-configserver:1.0
     restart: always
+    networks:
+      - bootcamp2022
     ports:
       - "8086:8086"
 
@@ -40,6 +46,8 @@ services:
       - "SPRING_CONFIG_IMPORT=optional:configserver:http://ms-configserver:8086"
       - "SPRING_DATA_MONGODB_HOST=mongo"
       - "EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE=http://ms-eureka:8087/eureka"
+    networks:
+      - bootcamp2022
     ports:
       - "8082:8082"
 
@@ -52,10 +60,13 @@ services:
       - mongo
       - discovery-server
       - config-server
+      - ms-customer-server
     environment:
       - "SPRING_CONFIG_IMPORT=optional:configserver:http://ms-configserver:8086"
       - "SPRING_DATA_MONGODB_HOST=mongo"
       - "EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE=http://ms-eureka:8087/eureka"
+    networks:
+      - bootcamp2022
     ports:
       - "8084:8084"
 
@@ -68,10 +79,14 @@ services:
       - mongo
       - discovery-server
       - config-server
+      - ms-customer-server
+      - ms-credit-server
     environment:
       - "SPRING_CONFIG_IMPORT=optional:configserver:http://ms-configserver:8086"
       - "SPRING_DATA_MONGODB_HOST=mongo"
       - "EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE=http://ms-eureka:8087/eureka"
+    networks:
+      - bootcamp2022
     ports:
       - "8083:8083"
 
@@ -84,12 +99,17 @@ services:
       - mongo
       - discovery-server
       - config-server
+      - ms-customer-server
+      - ms-credit-server
+      - ms-account-server
     environment:
       - "SPRING_CONFIG_IMPORT=optional:configserver:http://ms-configserver:8086"
       - "SPRING_DATA_MONGODB_HOST=mongo"
       - "EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE=http://ms-eureka:8087/eureka"
+    networks:
+      - bootcamp2022
     ports:
       - "8085:8085"
+
 networks:
-  default:
-    name: custom-network
+  bootcamp2022:
