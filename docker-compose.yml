@@ -110,6 +110,49 @@ services:
       - bootcamp2022
     ports:
       - "8085:8085"
+    
+  ms-card-server:
+    container_name: ms-card
+    build: .
+    image: lguisadom/ms-card:1.0
+    restart: always
+    depends_on:
+      - mongo
+      - discovery-server
+      - config-server
+      - ms-customer-server
+      - ms-account-server
+    environment:
+      - "SPRING_CONFIG_IMPORT=optional:configserver:http://ms-configserver:8086"
+      - "SPRING_DATA_MONGODB_HOST=mongo"
+      - "EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE=http://ms-eureka:8087/eureka"
+    networks:
+      - bootcamp2022
+    ports:
+      - "8089:8089"
+
+  ms-report-server:
+    container_name: ms-report
+    build: .
+    image: lguisadom/ms-report:1.0
+    restart: always
+    depends_on:
+      - mongo
+      - discovery-server
+      - config-server
+      - ms-customer-server
+      - ms-account-server
+      - ms-credit-server
+      - ms-movements-server
+      - ms-card-server
+    environment:
+      - "SPRING_CONFIG_IMPORT=optional:configserver:http://ms-configserver:8086"
+      - "SPRING_DATA_MONGODB_HOST=mongo"
+      - "EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE=http://ms-eureka:8087/eureka"
+    networks:
+      - bootcamp2022
+    ports:
+      - "8090:8090"
 
 networks:
   bootcamp2022:
