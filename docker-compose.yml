@@ -154,5 +154,27 @@ services:
     ports:
       - "8090:8090"
 
+  ms-gateway-server:
+    container_name: ms-gateway
+    build: .
+    image: lguisadom/ms-gateway:1.0
+    restart: always
+    depends_on:
+      - mongo
+      - discovery-server
+      - config-server
+      - ms-customer-server
+      - ms-account-server
+      - ms-credit-server
+      - ms-movements-server
+      - ms-card-server
+      - ms-report-server
+    environment:
+      - "EUREKA_CLIENT_SERVICE-URL_DEFAULTZONE=http://ms-eureka:8087/eureka"
+    networks:
+      - bootcamp2022
+    ports:
+      - "8088:8088"
+
 networks:
   bootcamp2022:
